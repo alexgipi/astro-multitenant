@@ -1,5 +1,6 @@
 import { defineAction } from 'astro:actions';
 import { z } from 'astro:schema';
+import { deleteDocument } from "@/lib/db";
 
 export const server = {
   deleteTenant: defineAction({
@@ -7,7 +8,15 @@ export const server = {
       id: z.string(),
     }),
     handler: async (input) => {
-      return `Delete tenant with id ${input.id}`
+
+
+      const res = await deleteDocument("tenants", input.id);
+      const { message, ok } = res;
+      const messageType = ok ? "success" : "error";
+
+      return { message, messageType, ok };
+      
+
     }
   })
 }
