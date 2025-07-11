@@ -1,14 +1,14 @@
 // /api/[collection].ts
 import type { APIRoute } from "astro";
-import { findByIdOrSlug, createUser } from "@/lib/db";
+import { findByidOrSubdomain, createUser } from "@/lib/db";
 
 export const GET: APIRoute = async ({ params }) => {
   try {
     console.log({params});
-    const {collection, idOrSlug} = params;
+    const {collection, idOrSubdomain} = params;
 
     // const items = await Model.find().exec();
-    const doc = await findByIdOrSlug(collection, idOrSlug);
+    const doc = await findByidOrSubdomain(collection, idOrSubdomain);
     console.log({doc});
     return new Response(JSON.stringify({
       message: "Find by id or slug",
