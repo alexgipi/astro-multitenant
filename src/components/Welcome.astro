@@ -2,7 +2,7 @@
 import { protocol, rootDomain } from "@/utils";
 const { subdomain, tenant } = Astro.props;
 const host = Astro.url.host;
-const emoji = tenant.emoji;
+const icon = tenant.icon;
 ---
 
 <section class="tenant-info">
@@ -30,7 +30,7 @@ const emoji = tenant.emoji;
   
   <div class="flex-1 flex items-center justify-center h-dvh">
     <div class="text-center">
-      <div class="text-9xl mb-6">{emoji}</div>
+      <div class="text-9xl mb-6">{icon}</div>
       <h1 class="text-4xl font-bold tracking-tight text-gray-900">
         Welcome to {host}
       </h1>
