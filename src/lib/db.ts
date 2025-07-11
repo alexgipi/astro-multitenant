@@ -3,9 +3,11 @@ import dbConnect from "./mongodb";
 
 // Create tenant schema
 const TenantSchema = new mongoose.Schema({
-  name: String,
-  slug: String,
-  emoji: String,
+  subdomain: {
+    type: String,
+    unique: true,
+  },
+  icon: String,
 }, { timestamps: true });
 
 
@@ -19,14 +21,15 @@ export const findAll = async (collectionName:string) => {
   return docs || [];
 };
 
-export const findByIdOrSlug = async (collectionName:any, idOrSlug:any) => {
-  console.log("findById", collectionName, idOrSlug);
-  const Model = mongoose.models[collectionName] || mongoose.model(collectionName, TenantSchema);
+export const findByidOrSubdomain = async (collectionName:any, idOrSubdomain:any) => {
+  console.log("findById", collectionName, idOrSubdomain);
   await dbConnect();
+  const Model = mongoose.models[collectionName] || mongoose.model(collectionName, TenantSchema);
+  await Model.init(); 
   const query = {
     $or: [
-      { _id: mongoose.Types.ObjectId.isValid(idOrSlug) ? idOrSlug : null },
-      { slug: idOrSlug },
+      { _id: mongoose.Types.ObjectId.isValid(idOrSubdomain) ? idOrSubdomain : null },
+      { subdomain: idOrSubdomain },
     ]
   };
 
@@ -35,8 +38,43 @@ export const findByIdOrSlug = async (collectionName:any, idOrSlug:any) => {
   return doc;
 };
 
-export const createUser = async (newUser:any) => {
-  await dbConnect();
-  const user = await {name: 'alexxx'} // Use the `User` model
-  return user;
+export const createDocument = async (collectionName: any, data: any) => {
+  try {
+    console.log("createDocument", collectionName, data);
+    await dbConnect();
+    const Model = mongoose.models[collectionName] || mongoose.model(collectionName, TenantSchema);
+    await Model.init(); 
+
+    const doc = new Model(data);
+    await doc.save();
+
+    return doc;
+
+  } catch (error:any) {
+    // console.error("Error creating document:", error);
+
+    if (error.code === 11000 && error.keyPattern?.subdomain) {
+      return { error: "This subdomain is already taken" };
+    }
+
+    return { error: "Error creating document" };
+  }
 };
+
+export const deleteDocument = async (collectionName: any, id: any) => {
+  try {
+    console.log("deleteDocument", collectionName, id);
+    await dbConnect();
+    const Model = mongoose.models[collectionName] || mongoose.model(collectionName, TenantSchema);
+    await Model.init(); 
+
+    const doc = await Model.findByIdAndDelete(id);
+
+    return doc;
+
+  } catch (error:any) {
+    // console.error("Error deleting document:", error);
+
+    return { error: "Error deleting document" };
+  }
+}
