@@ -1,19 +1,11 @@
 // /api/[collection].ts
 import type { APIRoute } from "astro";
-import { findAll, createUser } from "@/lib/db";
+import { findAll, createDocument } from "@/lib/db";
 
 export const GET: APIRoute = async ({ params }) => {
   try {
     const collection:any = params.collection;
-    // const items = await Model.find().exec();
     const res:any = await findAll(collection);
-    
-    // if (!res.ok) {
-    //   return new Response(JSON.stringify(res), {
-    //     status: 404,
-    //     statusText: res.statusText
-    //   });
-    // };
     
     return new Response(JSON.stringify({
       message: "Read all docs",
@@ -36,26 +28,44 @@ export const GET: APIRoute = async ({ params }) => {
   }
 };
 
-export const POST: APIRoute = async ({ request }) => {
-  try {
-    const data = await request.json();
-    const newUser = await createUser(data);
-    return new Response(JSON.stringify({
-      message: "Creado",
-      newUser,
-      ok: true,
-    }), {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  } catch (error) {
-    return new Response(JSON.stringify({ error: 'Error al crear el usuario' }), {
-      status: 500,
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
-  }
+export const POST: APIRoute = async ({ request, params }) => {
+    const data = await request.formData();
+    const subdomain = data.get("subdomain");
+    const icon = data.get("icon");
+
+    // Validate the data - you'll probably want to do more than this
+    if (!subdomain || !icon) {
+      return new Response(
+        JSON.stringify({
+          message: "Missing required fields",
+        }),
+        { status: 400 }
+      );
+    }
+
+    const collection:any = params.collection;
+    const res:any = await createDocument(collection, { subdomain, icon });
+
+    if(res.error) {
+      console.log("Error creating document", res.error);
+      return new Response(
+        JSON.stringify({
+          message: res.error,
+          ok: false,
+        }),
+        { status: 500 }
+      );
+    }
+
+    console.log("Document created", res);
+
+    // Do something with the data, then return a success response
+    return new Response(
+      JSON.stringify({
+        message: `Created document ${subdomain}`,
+        doc: res,
+        ok: true,
+      }),
+      { status: 200 }
+    );
 };
