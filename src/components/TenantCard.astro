@@ -1,0 +1,85 @@
+---
+import { protocol, rootDomain } from "@/utils";
+const { tenant } = Astro.props;
+const createdAt = new Date(tenant.createdAt);
+const createdAtFormatted = createdAt.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+  hour: 'numeric',
+  minute: 'numeric',
+});
+---
+
+<div
+  data-slot="card"
+  class="bg-card text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-sm"
+>
+  <div
+    data-slot="card-header"
+    class="@container/card-header grid auto-rows-min grid-rows-[auto_auto] items-start gap-1.5 px-6 has-data-[slot=card-action]:grid-cols-[1fr_auto] [.border-b]:pb-6 pb-2"
+  >
+    <div class="flex items-center justify-between">
+      <div data-slot="card-title" class="font-semibold text-xl">
+        {tenant.subdomain}
+      </div>
+      <button
+        data-tenant-id={tenant._id}
+        data-slot="button"
+        class="delete-btn inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg:not([class*='size-'])]:size-4 shrink-0 [&_svg]:shrink-0 outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:hover:bg-accent/50 size-9 text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+        type="submit"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="lucide lucide-trash2 lucide-trash-2 h-5 w-5"
+          aria-hidden="true"
+          ><path d="M3 6h18"></path><path
+            d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path
+            d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line
+            x1="10"
+            x2="10"
+            y1="11"
+            y2="17"></line><line x1="14" x2="14" y1="11" y2="17"></line></svg
+        >
+      </button>
+    </div>
+  </div>
+  <div data-slot="card-content" class="px-6">
+    <div class="flex items-center justify-between">
+      <div class="text-4xl">{tenant.icon}</div>
+    </div>
+
+    <div class="mt-4 flex justify-between flex-wrap gap-1.5">
+      <a
+        href={`${protocol}://${tenant.subdomain}.${rootDomain}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        class="text-blue-500 hover:underline text-sm">Visit subdomain →</a
+      >
+      <div
+        class="text-sm text-gray-500"
+      >
+        {createdAtFormatted}
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+
+  const buttons = document.querySelectorAll('[data-tenant-id]');
+
+  buttons.forEach((button:any) => {
+    button.addEventListener('click', () => {
+      alert("Delete " + button.dataset.tenantId + " tenant");
+    });
+  });
+</script>
