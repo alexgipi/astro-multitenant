@@ -74,12 +74,21 @@ const createdAtFormatted = createdAt.toLocaleDateString('en-US', {
 </div>
 
 <script>
+  import { actions } from 'astro:actions';
 
   const buttons = document.querySelectorAll('[data-tenant-id]');
 
   buttons.forEach((button:any) => {
-    button.addEventListener('click', () => {
-      alert("Delete " + button.dataset.tenantId + " tenant");
+    button.addEventListener('click', async () => {
+      const id = button.dataset.tenantId;
+      const { data, error } = await actions.deleteTenant({ id });
+      const messageType = data?.messageType;
+      const message = data?.message;
+      
+      if (!error) {
+        console.log(messageType, message);
+        window.location.href = "/admin";
+      }
     });
   });
 </script>
