@@ -3,9 +3,10 @@ import { protocol, rootDomain } from "@/utils";
 const { subdomain, tenant } = Astro.props;
 const host = Astro.url.host;
 const icon = tenant.icon;
+const enableConfetti = true;
 ---
 
-<section class="tenant-info">
+<section data-enable-confetti={enableConfetti} class="tenant-info"></section>
   <header class="absolute p-4">
     <div class="flex justify-between items-center">   
       <a href={`${protocol}://${rootDomain}`} class="flex gap-1 items-center text-gray-800 hover:underline">
@@ -40,3 +41,12 @@ const icon = tenant.icon;
     </div>
   </div>
 </section>
+
+<script>
+  import confetti from 'canvas-confetti';
+  const confettiState:any = document.querySelector('[data-enable-confetti]')
+  const enableConfetti = confettiState?.dataset?.enableConfetti === 'true'
+  
+  if(enableConfetti) confetti();
+
+</script>
