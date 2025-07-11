@@ -70,11 +70,11 @@ export const deleteDocument = async (collectionName: any, id: any) => {
 
     const doc = await Model.findByIdAndDelete(id);
 
-    return doc;
+    return { doc, message: "Document deleted", ok: true };
 
   } catch (error:any) {
     // console.error("Error deleting document:", error);
 
-    return { error: "Error deleting document" };
+    return { message: "Error deleting document", ok: false };
   }
 }
