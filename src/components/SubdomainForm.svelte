@@ -12,10 +12,12 @@
     async function submit(e: SubmitEvent) {
         e.preventDefault();
         const formData = new FormData(e.currentTarget as HTMLFormElement);
+
         const response = await fetch("/api/tenants", {
             method: "POST",
             body: formData,
         });
+        
         const data = await response.json();
 
         message = data?.message
