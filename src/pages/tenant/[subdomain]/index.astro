@@ -3,15 +3,14 @@ import Layout from "@/layouts/Layout.astro";
 import NotFound from "@/components/NotFound.astro";
 import Welcome from "@/components/Welcome.astro";
 import { protocol, rootDomain } from "@/utils";
-import { findByIdOrSlug } from "@/lib/db";
+import { findByidOrSubdomain } from "@/lib/db";
 const host = Astro.url.host;
 const { subdomain } = Astro.params;
 
-const API_URL = protocol + '://' + rootDomain + '/api/tenants';
+const API_URL = protocol + '://' + rootDomain + '/api';
 
-const tenantData = await fetch(`${API_URL}/${subdomain}`).then(res => res.json());
+const tenantData = await fetch(`${API_URL}/tenants/${subdomain}`).then(res => res.json());
 const tenant = tenantData.doc;
-console.log({tenant});
 ---
 
 <Layout>
